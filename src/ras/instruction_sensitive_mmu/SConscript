@@ -1,0 +1,6 @@
+Import("*")
+
+SimObject("InstructionSensitiveMMU.py",
+          sim_objects=["InstructionSensitiveMMU"])
+
+Source("instruction_sensitive_mmu.cc")
