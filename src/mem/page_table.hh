@@ -92,12 +92,14 @@ class EmulationPageTable : public Serializable
      * bit 0 - no-clobber | clobber
      * bit 2 - cacheable  | uncacheable
      * bit 3 - read-write | read-only
+     * bit 4 - read-write | read-only (except for CALL/RET instructions)
      */
     enum MappingFlags : uint32_t
     {
         Clobber     = 1,
         Uncacheable = 4,
         ReadOnly    = 8,
+        RAS         = 16
     };
 
     // flag which marks the page table as shared among software threads

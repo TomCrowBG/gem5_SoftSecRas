@@ -315,7 +315,7 @@ Process::drain()
 }
 
 void
-Process::allocateMem(Addr vaddr, int64_t size, bool clobber)
+Process::allocateMem(Addr vaddr, int64_t size, bool clobber, EmulationPageTable::MappingFlags flags)
 {
     const auto page_size = pTable->pageSize();
 
@@ -340,8 +340,8 @@ Process::allocateMem(Addr vaddr, int64_t size, bool clobber)
     const Addr paddr = seWorkload->allocPhysPages(npages);
     const Addr pages_size = npages * page_size;
     pTable->map(page_addr, paddr, pages_size,
-                clobber ? EmulationPageTable::Clobber :
-                          EmulationPageTable::MappingFlags(0));
+                clobber ? EmulationPageTable::Clobber | flags:
+                          flags);
 }
 
 void

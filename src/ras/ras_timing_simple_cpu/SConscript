@@ -1,0 +1,6 @@
+Import("*")
+
+SimObject("RASTimingSimpleCPU.py",
+          sim_objects=["RASTimingSimpleCPU"])
+
+Source("ras_timing_simple_cpu.cc")

@@ -2,10 +2,10 @@ from m5.objects.BaseMMU import BaseMMU
 from m5.objects.X86TLB import X86TLB
 
 
-class InstructionSensitiveMMU(BaseMMU):
-    type = "InstructionSensitiveMMU"
-    cxx_header = "ras/instruction_sensitive_mmu/instruction_sensitive_mmu.hh"
-    cxx_class = "gem5::X86ISA::InstructionSensitiveMMU"
+class RASMMU(BaseMMU):
+    type = "RASMMU"
+    cxx_header = "ras/ras_mmu/ras_mmu.hh"
+    cxx_class = "gem5::X86ISA::RASMMU"
     itb = X86TLB(entry_type="instruction")
     dtb = X86TLB(entry_type="data")
 

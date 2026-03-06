@@ -123,6 +123,10 @@ namespace X86ISA
         };
         VSyscallPage vsyscallPage;
 
+        Addr rasBase;
+        Addr rasLimit;
+        uint64_t rasSize;
+
       public:
         X86_64Process(const ProcessParams &params,
                       loader::ObjectFile *objFile);

@@ -151,6 +151,9 @@ let {{
             self.control_direct = True
         def control_indirect(self):
             self.control_indirect = True
+        
+        def ras_access(self):
+            self.ras_access = True
 
         def __init__(self, name):
             super().__init__(name)
@@ -163,7 +166,8 @@ let {{
                 "function_call" : self.function_call,
                 "function_return" : self.function_return,
                 "control_direct" : self.control_direct,
-                "control_indirect" : self.control_indirect
+                "control_indirect" : self.control_indirect,
+                "ras_access" : self.ras_access
             }
             self.declared = False
             self.adjust_env = ""
@@ -184,6 +188,7 @@ let {{
             self.function_return = False
             self.control_direct = False
             self.control_indirect = False
+            self.ras_access = False
 
         def getAllocator(self, env):
             return "new x86_macroop::%s(machInst, %s)" % \
@@ -236,6 +241,8 @@ let {{
                         flags.append("IsDirectControl")
                     if self.control_indirect:
                         flags.append("IsIndirectControl")
+                    if self.ras_access:
+                        flags.append("IsRAS")
                 else:
                     flags.append("IsDelayedCommit")
 

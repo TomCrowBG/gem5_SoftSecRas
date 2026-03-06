@@ -408,6 +408,12 @@ enum : RegIndex
     XcrBase,
     Xcr0 = XcrBase,
 
+    // RAS registers
+
+    RASP, // 205
+    RASBase, // 206
+    RASLimit, // 207
+
     NumRegs
 };
 

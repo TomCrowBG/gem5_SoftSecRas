@@ -67,6 +67,10 @@
 #include "sim/syscall_return.hh"
 #include "sim/system.hh"
 
+#include "base/trace.hh"
+#include "debug/X86.hh"
+#include "arch/x86/regs/misc.hh"
+
 namespace gem5
 {
 
@@ -103,14 +107,15 @@ void X86Process::clone(ThreadContext *old_tc, ThreadContext *new_tc,
 
 X86_64Process::X86_64Process(const ProcessParams &params,
                              loader::ObjectFile *objFile) :
-    X86Process(params, objFile)
+    X86Process(params, objFile),
+    rasSize(0x1000)
 {
     vsyscallPage.base = 0xffffffffff600000ULL;
     vsyscallPage.size = PageBytes;
     vsyscallPage.vtimeOffset = 0x400;
     vsyscallPage.vgettimeofdayOffset = 0x0;
 
-    Addr brk_point = roundUp(image.maxAddr(), PageBytes);
+    Addr brk_point = roundUp(image.maxAddr(), PageBytes) + roundUp(rasSize, PageBytes);
     Addr stack_base = 0x7FFFFFFFF000ULL;
     Addr max_stack_size = params.maxStackSize;
     Addr next_thread_stack_base = stack_base - max_stack_size;
@@ -176,7 +181,18 @@ X86_64Process::initState()
     initVirtMem->writeBlob(
             vsyscallPage.base + vsyscallPage.vgettimeofdayOffset,
             vgettimeofdayBlob, sizeof(vgettimeofdayBlob));
+    
+    // Setup return address stack
+    Addr image_end = roundUp(image.maxAddr(), PageBytes);
+    rasBase = image_end;
+    rasLimit = rasBase + rasSize;
+    memState->mapRegion(rasBase, rasSize, "return_address_stack");
 
+    // Manually set up physical memory and page table entries, because SE mode sucks ass and doesn't properly handle page table mapping
+    allocateMem(rasBase, rasSize, false, EmulationPageTable::MappingFlags::RAS);
+
+    // init thread registers
+    
     if (kvmInSE) {
         PortProxy physProxy = system->physProxy;
 
@@ -408,6 +424,11 @@ X86_64Process::initState()
             tc->setMiscReg(misc_reg::IdtrBase, IDTVirtAddr);
             tc->setMiscReg(misc_reg::IdtrLimit, 0xffff);
 
+            /* initialize return address stack */
+            tc->setMiscReg(misc_reg::RASBase, rasBase);
+            tc->setMiscReg(misc_reg::RASLimit, rasLimit);
+            tc->setMiscReg(misc_reg::RASP, rasBase);
+
             /* enabling syscall and sysret */
             RegVal star = ((RegVal)sret << 48) | ((RegVal)scall << 32);
             tc->setMiscReg(misc_reg::Star, star);
@@ -620,6 +641,11 @@ X86_64Process::initState()
             tc->setMiscReg(misc_reg::Ftw, 0xffff);
             tc->setMiscReg(misc_reg::Fcw, 0x037f);
 
+            /* initialize return address stack */
+            tc->setMiscReg(misc_reg::RASBase, rasBase);
+            tc->setMiscReg(misc_reg::RASLimit, rasLimit);
+            tc->setMiscReg(misc_reg::RASP, rasBase);
+
             // Setting CR3 to the process pid so that concatinated
             // page addr with lower 12 bits of CR3 can be used in SE
             // mode as well to avoid conflicts between tlb entries with
@@ -632,6 +658,13 @@ X86_64Process::initState()
             tc->setMiscReg(misc_reg::Cr4, cr4);
         }
     }
+
+    for (int i = 0; i < contextIds.size(); i++) {
+        ThreadContext *tc = system->threads[contextIds[i]];
+        printf("After reset: RASP = %#lx\n", tc->readMiscReg(X86ISA::misc_reg::RASP));
+    }
+
+    printf("HELLO WORLD\n\n\n\n");
 }
 
 void

@@ -79,6 +79,11 @@ const MsrMap::value_type msrMapData[] = {
     MsrVal(0x26E, misc_reg::MtrrFix4kF0000),
     MsrVal(0x26F, misc_reg::MtrrFix4kF8000),
     MsrVal(0x277, misc_reg::Pat),
+    
+    MsrVal(0x280, misc_reg::RASP),
+    MsrVal(0x281, misc_reg::RASBase),
+    MsrVal(0x282, misc_reg::RASLimit),
+
     MsrVal(0x2FF, misc_reg::DefType),
     MsrVal(0x400, misc_reg::Mc0Ctl),
     MsrVal(0x404, misc_reg::Mc1Ctl),
@@ -139,7 +144,7 @@ const MsrMap::value_type msrMapData[] = {
     MsrVal(0xC0010114, misc_reg::VmCr),
     MsrVal(0xC0010115, misc_reg::Ignne),
     MsrVal(0xC0010116, misc_reg::SmmCtl),
-    MsrVal(0xC0010117, misc_reg::VmHsavePa)
+    MsrVal(0xC0010117, misc_reg::VmHsavePa),
 };
 
 static const unsigned msrMapSize = sizeof(msrMapData) / sizeof(msrMapData[0]);

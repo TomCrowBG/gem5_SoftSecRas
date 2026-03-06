@@ -40,11 +40,26 @@ def macroop CALL_NEAR_I
     .adjust_env oszIn64Override
     .function_call
     .control_direct
+    .ras_access
 
     limm t1, imm
     rdip t7
+    
     # Check target of call
-    st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # This line places the return address on the stack. Will be removed later
+    #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # RAS logic
+
+    # Place return address into RAS
+    rdval t2, ctrlRegIdx(205)
+    st t7, flatseg, [0, t0, t2], dataSize=dsz
+
+    # Increment RASP by data size
+    addi t2, t2, dsz
+    wrval ctrlRegIdx(205), t2
+
     subi rsp, rsp, dsz, dataSize=ssz
     wrip t7, t1
 };
@@ -55,10 +70,25 @@ def macroop CALL_NEAR_R
     .adjust_env oszIn64Override
     .function_call
     .control_indirect
+    .ras_access
 
-    rdip t1
+    rdip t7
+
     # Check target of call
-    st t1, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # This line places the return address on the stack. Will be removed later
+    #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # RAS logic
+
+    # Place return address into RAS
+    rdval t2, ctrlRegIdx(205)
+    st t7, flatseg, [0, t0, t2], dataSize=dsz
+
+    # Increment RASP by data size
+    addi t2, t2, dsz
+    wrval ctrlRegIdx(205), t2
+
     subi rsp, rsp, dsz, dataSize=ssz
     wripi reg, 0
 };
@@ -69,11 +99,26 @@ def macroop CALL_NEAR_M
     .adjust_env oszIn64Override
     .function_call
     .control_indirect
+    .ras_access
 
     rdip t7
     ld t1, seg, sib, disp
+    
     # Check target of call
-    st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # This line places the return address on the stack. Will be removed later
+    #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # RAS logic
+
+    # Place return address into RAS
+    rdval t2, ctrlRegIdx(205)
+    st t7, flatseg, [0, t0, t2], dataSize=dsz
+
+    # Increment RASP by data size
+    addi t2, t2, dsz
+    wrval ctrlRegIdx(205), t2
+
     subi rsp, rsp, dsz, dataSize=ssz
     wripi t1, 0
 };
@@ -84,11 +129,26 @@ def macroop CALL_NEAR_P
     .adjust_env oszIn64Override
     .function_call
     .control_indirect
+    .ras_access
 
     rdip t7
     ld t1, seg, riprel, disp
+    
     # Check target of call
-    st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # This line places the return address on the stack. Will be removed later
+    #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
+
+    # RAS logic
+
+    # Place return address into RAS
+    rdval t2, ctrlRegIdx(205)
+    st t7, flatseg, [0, t0, t2], dataSize=dsz
+
+    # Increment RASP by data size
+    addi t2, t2, dsz
+    wrval ctrlRegIdx(205), t2
+    
     subi rsp, rsp, dsz, dataSize=ssz
     wripi t1, 0
 };

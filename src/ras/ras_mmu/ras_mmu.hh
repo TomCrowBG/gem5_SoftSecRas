@@ -4,7 +4,7 @@
 #include "arch/generic/mmu.hh"
 #include "arch/x86/page_size.hh"
 #include "arch/x86/tlb.hh"
-#include "params/InstructionSensitiveMMU.hh"
+#include "params/RASMMU.hh"
 
 namespace gem5
 {
@@ -12,10 +12,10 @@ namespace gem5
 namespace X86ISA
 {
 
-class InstructionSensitiveMMU: public BaseMMU
+class RASMMU: public BaseMMU
 {
   public:
-    InstructionSensitiveMMU(const InstructionSensitiveMMUParams& params);
+    RASMMU(const RASMMUParams& params);
 
     void
     flushNonGlobal()

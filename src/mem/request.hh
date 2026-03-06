@@ -259,6 +259,11 @@ class Request : public Extensible<Request>
         /** TLBI_EXT_SYNC_COMP seems to be the largest value
             of FlagsType, so HAS_NO_ADDR's value is that << 1 */
         HAS_NO_ADDR                = 0x0001000000000000,
+
+        /** The request bypasses page table permission flags specific to bit 63.
+         * This is only used by RAS specific MMUs.
+         */
+        RAS_BYPASS_MEM             = 0x0002000000000000,
     };
     static const FlagsType STORE_NO_DATA = CACHE_BLOCK_ZERO |
         CLEAN | INVALIDATE;

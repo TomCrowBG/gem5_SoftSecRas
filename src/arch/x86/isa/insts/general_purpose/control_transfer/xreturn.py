@@ -40,8 +40,21 @@ def macroop RET_NEAR
     .adjust_env oszIn64Override
     .function_return
     .control_indirect
+    .ras_access
 
-    ld t1, ss, [1, t0, rsp], addressSize=ssz
+    # This line reads the return address from the stack. Will be removed later
+    #ld t1, ss, [1, t0, rsp], addressSize=ssz
+
+    # RAS logic
+
+    # Decrement RASP by data size
+    rdval t7, ctrlRegIdx(205)
+    subi t7, t7, dsz
+    wrval ctrlRegIdx(205), t7
+    
+    # Read return address from RAS
+    ld t1, flatseg, [0, t0, t7], dataSize=dsz
+    
     # Check address of return
     addi rsp, rsp, dsz, dataSize=ssz
     wripi t1, 0
@@ -53,9 +66,23 @@ def macroop RET_NEAR_I
     .adjust_env oszIn64Override
     .function_return
     .control_indirect
+    .ras_access
 
     limm t2, imm
-    ld t1, ss, [1, t0, rsp], addressSize=ssz
+    
+    # This line reads the return address from the stack. Will be removed later
+    #ld t1, ss, [1, t0, rsp], addressSize=ssz
+    
+    # RAS logic
+
+    # Decrement RASP by data size
+    rdval t7, ctrlRegIdx(205)
+    subi t7, t7, dsz
+    wrval ctrlRegIdx(205), t7
+    
+    # Read return address from RAS
+    ld t1, flatseg, [0, t0, t7], dataSize=dsz
+
     # Check address of return
     addi rsp, rsp, dsz, dataSize=ssz
     add rsp, rsp, t2, dataSize=ssz

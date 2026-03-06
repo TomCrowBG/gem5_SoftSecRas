@@ -118,7 +118,7 @@ class Process : public SimObject
     // align to page boundaries, it will be expanded in either direction until
     // it does. This function will therefore set up *at least* the range
     // requested, and may configure more if necessary.
-    void allocateMem(Addr vaddr, int64_t size, bool clobber=false);
+    void allocateMem(Addr vaddr, int64_t size, bool clobber=false, EmulationPageTable::MappingFlags flags = EmulationPageTable::MappingFlags(0));
 
     /**
      * Unmap the given virtual address range and deallocate any physical
