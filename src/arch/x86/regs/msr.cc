@@ -79,7 +79,7 @@ const MsrMap::value_type msrMapData[] = {
     MsrVal(0x26E, misc_reg::MtrrFix4kF0000),
     MsrVal(0x26F, misc_reg::MtrrFix4kF8000),
     MsrVal(0x277, misc_reg::Pat),
-    
+
     MsrVal(0x280, misc_reg::RASP),
     MsrVal(0x281, misc_reg::RASBase),
     MsrVal(0x282, misc_reg::RASLimit),

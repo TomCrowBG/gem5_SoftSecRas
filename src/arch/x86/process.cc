@@ -181,7 +181,7 @@ X86_64Process::initState()
     initVirtMem->writeBlob(
             vsyscallPage.base + vsyscallPage.vgettimeofdayOffset,
             vgettimeofdayBlob, sizeof(vgettimeofdayBlob));
-    
+
     // Setup return address stack
     Addr image_end = roundUp(image.maxAddr(), PageBytes);
     rasBase = image_end;
@@ -192,7 +192,7 @@ X86_64Process::initState()
     allocateMem(rasBase, rasSize, false, EmulationPageTable::MappingFlags::RAS);
 
     // init thread registers
-    
+
     if (kvmInSE) {
         PortProxy physProxy = system->physProxy;
 

@@ -151,7 +151,7 @@ let {{
             self.control_direct = True
         def control_indirect(self):
             self.control_indirect = True
-        
+
         def ras_access(self):
             self.ras_access = True
 

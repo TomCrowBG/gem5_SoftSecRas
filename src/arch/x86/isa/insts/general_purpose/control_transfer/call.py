@@ -44,7 +44,7 @@ def macroop CALL_NEAR_I
 
     limm t1, imm
     rdip t7
-    
+
     # Check target of call
 
     # This line places the return address on the stack. Will be removed later
@@ -103,7 +103,7 @@ def macroop CALL_NEAR_M
 
     rdip t7
     ld t1, seg, sib, disp
-    
+
     # Check target of call
 
     # This line places the return address on the stack. Will be removed later
@@ -133,7 +133,7 @@ def macroop CALL_NEAR_P
 
     rdip t7
     ld t1, seg, riprel, disp
-    
+
     # Check target of call
 
     # This line places the return address on the stack. Will be removed later
@@ -148,7 +148,7 @@ def macroop CALL_NEAR_P
     # Increment RASP by data size
     addi t2, t2, dsz
     wrval ctrlRegIdx(205), t2
-    
+
     subi rsp, rsp, dsz, dataSize=ssz
     wripi t1, 0
 };
