@@ -75,6 +75,8 @@ namespace X86ISA
         // Read permission is always available, assuming it isn't blocked by
         // other mechanisms.
         bool writable;
+        // Read and write are blocked unless it comes from a CALL/RET instruction.
+        bool ras;
         // Whether this page is accesible without being in supervisor mode.
         bool user;
         // Whether to use write through or write back. M5 ignores this and
@@ -94,7 +96,7 @@ namespace X86ISA
         TlbEntryTrie::Handle trieHandle;
 
         TlbEntry(Addr asn, Addr _vaddr, Addr _paddr,
-                 bool uncacheable, bool read_only);
+                 bool uncacheable, bool read_only, bool ras);
         TlbEntry();
 
         void

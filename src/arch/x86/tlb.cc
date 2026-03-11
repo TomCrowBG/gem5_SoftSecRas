@@ -56,6 +56,7 @@
 #include "sim/full_system.hh"
 #include "sim/process.hh"
 #include "sim/pseudo_inst.hh"
+#include "ras/ras_timing_simple_cpu/ras_timing_simple_cpu.hh"
 
 namespace gem5
 {
@@ -455,7 +456,8 @@ TLB::translate(const RequestPtr &req,
                         entry = insert(alignedVaddr, TlbEntry(
                                 p->pTable->pid(), alignedVaddr, pte->paddr,
                                 pte->flags & EmulationPageTable::Uncacheable,
-                                pte->flags & EmulationPageTable::ReadOnly),
+                                pte->flags & EmulationPageTable::ReadOnly,
+                                pte->flags & EmulationPageTable::RAS),
                                 pcid);
                     }
                     DPRINTF(TLB, "Miss was serviced.\n");
@@ -465,6 +467,47 @@ TLB::translate(const RequestPtr &req,
             DPRINTF(TLB, "Entry found with paddr %#x, "
                     "doing protection checks.\n", entry->paddr);
             // Do paging protection checks.
+            
+            // Check RAS flags
+            // Check if CPU inherits from a RAS CPU Type
+            BaseCPU *cpu = tc->getCpuPtr();
+            if (auto *ras_cpu = dynamic_cast<RASTimingSimpleCPU*>(cpu)) {
+                StaticInstPtr currentMacroInstruction = ras_cpu->curMacroStaticInst;
+
+                if (currentMacroInstruction && currentMacroInstruction->isRAS() && entry->ras) {
+                    // Allow instruction to pass
+                    DPRINTF(TLB, "RAS page table entry accessed by RAS instruction at %#x\n", vaddr);
+                } else if (currentMacroInstruction && !currentMacroInstruction->isRAS() && entry->ras) {
+                    // Not a RAS instruction
+                    DPRINTF(TLB, "RAS page table entry accessed by non-RAS instruction at %#x\n", vaddr);
+                    DPRINTF(TLB, "This could indicate a ROP attack\n");
+                    
+                    DPRINTF(TLB, "Instruction at PC %#x:\n", tc->pcState().instAddr());
+                    DPRINTF(TLB, "Instruction: %s\n", currentMacroInstruction->disassemble(tc->pcState().instAddr()));
+                    
+                    // RAS flags
+                    DPRINTF(TLB, "IsRAS: %d\n", currentMacroInstruction->isRAS());
+
+                    return std::make_shared<GeneralProtection>(0);
+                } else if (currentMacroInstruction && currentMacroInstruction->isRAS() && !entry->ras) {
+                    // RAS instruction accessing non-RAS memory
+                    DPRINTF(TLB, "non-RAS page table entry accessed by RAS instruction at %#x\n", vaddr);
+                    DPRINTF(TLB, "This could indicate a RAS (over/under)flow\n");
+
+                    uint64_t rasp = tc->readMiscRegNoEffect(misc_reg::RASP);
+                    uint64_t ras_base = tc->readMiscRegNoEffect(misc_reg::RASBase);
+                    uint64_t ras_limit = tc->readMiscRegNoEffect(misc_reg::RASLimit);
+                    
+                    if (rasp < ras_base || rasp > ras_limit)
+                        return std::make_shared<GeneralProtection>(0);
+                } else {
+                    // Normal instruction, or no currently stored instruction
+                }
+            }
+            else {
+                DPRINTF(TLB, "RAS is not yet implemented for this CPU type\n");
+            }
+
             bool inUser = m5Reg.cpl == 3 && !(flags & CPL0FlagBit);
             CR0 cr0 = tc->readMiscRegNoEffect(misc_reg::Cr0);
             bool badWrite = (!entry->writable && (inUser || cr0.wp));

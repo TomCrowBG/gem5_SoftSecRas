@@ -661,10 +661,8 @@ X86_64Process::initState()
 
     for (int i = 0; i < contextIds.size(); i++) {
         ThreadContext *tc = system->threads[contextIds[i]];
-        printf("After reset: RASP = %#lx\n", tc->readMiscReg(X86ISA::misc_reg::RASP));
+        // printf("After reset: RASP = %#lx\n", tc->readMiscReg(X86ISA::misc_reg::RASP));
     }
-
-    printf("HELLO WORLD\n\n\n\n");
 }
 
 void

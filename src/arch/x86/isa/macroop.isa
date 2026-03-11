@@ -56,8 +56,8 @@ output header {{
     {
       public:
         Macroop(const char *mnem, ExtMachInst _machInst,
-                uint32_t _numMicroops, X86ISA::EmulEnv _env)
-                    : MacroopBase(mnem, _machInst, _numMicroops, _env)
+                uint32_t _numMicroops, X86ISA::EmulEnv _env, uint64_t _flags)
+                    : MacroopBase(mnem, _machInst, _numMicroops, _env, _flags)
         {}
 
         Fault
@@ -115,7 +115,7 @@ def template MacroDisassembly {{
 def template MacroConstructor {{
         x86_macroop::%(class_name)s::%(class_name)s(
                 ExtMachInst machInst, EmulEnv _env)
-            : %(base_class)s("%(mnemonic)s", machInst, %(num_microops)s, _env)
+            : %(base_class)s("%(mnemonic)s", machInst, %(num_microops)s, _env, %(flags)s)
         {
             %(adjust_env)s;
             %(adjust_imm)s;
@@ -261,6 +261,18 @@ let {{
             regSize = '''(%s || (env.base == int_reg::Rsp && %s) ?
                          env.stackSize :
                          env.dataSize)''' % (useStackSize, memoryInst)
+            macroop_flags = []
+            if self.function_call:
+                macroop_flags.append("IsCall")
+            if self.function_return:
+                macroop_flags.append("IsReturn")
+            if self.control_direct:
+                macroop_flags.append("IsDirectControl")
+            if self.control_indirect:
+                macroop_flags.append("IsIndirectControl")
+            if self.ras_access:
+                macroop_flags.append("IsRAS")
+            flags_str = "{" + " | ".join(f"1ULL << StaticInstFlags::{f}" for f in macroop_flags) + "}"
             iop = InstObjParams(self.getMnemonic(), self.name, "Macroop",
                                 {"code" : "", "num_microops" : numMicroops,
                                  "alloc_microops" : allocMicroops,
@@ -269,7 +281,8 @@ let {{
                                  "adjust_disp" : self.adjust_disp,
                                  "disassembly" : env.disassembly,
                                  "regSize" : regSize,
-                                 "init_env" : self.initEnv})
+                                 "init_env" : self.initEnv,
+                                 "flags" : flags_str})
             return MacroConstructor.subst(iop) + \
                    MacroDisassembly.subst(iop);
 }};

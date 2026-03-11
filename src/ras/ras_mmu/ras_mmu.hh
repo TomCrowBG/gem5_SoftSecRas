@@ -16,6 +16,7 @@ class RASMMU: public BaseMMU
 {
   public:
     RASMMU(const RASMMUParams& params);
+    virtual ~RASMMU();
 
     void
     flushNonGlobal()
@@ -37,6 +38,10 @@ class RASMMU: public BaseMMU
         return TranslationGenPtr(new MMUTranslationGen(
                 PageBytes, start, size, tc, this, mode, flags));
     }
+
+    virtual void
+    translateTiming(const RequestPtr &req, ThreadContext *tc,
+                    Translation *translation, Mode mode);
 };
 
 } // namespace X86ISA

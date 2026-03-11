@@ -59,12 +59,19 @@ class MacroopBase : public X86StaticInst
 
     //Constructor.
     MacroopBase(const char *mnem, ExtMachInst _machInst,
-            uint32_t _numMicroops, X86ISA::EmulEnv _env) :
+            uint32_t _numMicroops, X86ISA::EmulEnv _env, uint64_t _flags) :
                 X86StaticInst(mnem, _machInst, No_OpClass),
                 numMicroops(_numMicroops), env(_env)
     {
         assert(numMicroops);
         microops = new StaticInstPtr[numMicroops];
+
+        // Initialize _flags flags
+        for (int i = 0; i < StaticInstFlags::Num_Flags; i++) {
+        if (_flags & (1ULL << i))
+            flags[i] = true;
+        }
+
         flags[IsMacroop] = true;
     }
 
