@@ -57,10 +57,10 @@ SETranslatingPortProxy::fixupRange(const TranslationGen::Range &range,
         BaseMMU::Mode mode) const
 {
     DPRINTF(TLB, "fixupRange: vaddr=%#x size=%d mode=%s allocating=%d\n",
-            range.vaddr, range.size, 
+            range.vaddr, range.size,
             mode == BaseMMU::Write ? "Write" : "Read",
             allocating);
-    
+
     auto *process = _tc->getProcessPtr();
 
     if (mode == BaseMMU::Write) {

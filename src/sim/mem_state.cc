@@ -454,7 +454,7 @@ MemState::fixupFault(Addr vaddr)
         }
         return true;
     }
-    
+
     DPRINTF(TLB, "MemState: No fixup found\n");
 
     return false;
