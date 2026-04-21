@@ -42,8 +42,9 @@ def macroop RET_NEAR
     .control_indirect
     .ras_access
 
-    # This line reads the return address from the stack. Will be removed later
-    #ld t1, ss, [1, t0, rsp], addressSize=ssz
+    # This line reads the return address from the stack.
+    # Comment in for Shadow Stack
+    #ld t2, ss, [1, t0, rsp], addressSize=ssz
 
     # RAS logic
 
@@ -55,8 +56,18 @@ def macroop RET_NEAR
     # Read return address from RAS
     ld t1, flatseg, [0, t0, t7], dataSize=dsz
 
-    # Check address of return
+    # Shadow Stack Comparison. Comment in for Shadow Stack
+    #sub t2, t1, t2, flags=(EZF,)
+    #br label("rsp_matches"), flags=(CEZF,)
+    #fault "std::make_shared<SecurityException>()"
+#rsp_matches:
+
+    # This line decrements the stack pointer register
+    # to compensate for the return address on the stack.
+    # Comment in for Shadow Stack
+    # UPD: You actually need to leave it in for stack formatting
     addi rsp, rsp, dsz, dataSize=ssz
+
     wripi t1, 0
 };
 
@@ -68,10 +79,11 @@ def macroop RET_NEAR_I
     .control_indirect
     .ras_access
 
-    limm t2, imm
+    limm t3, imm
 
-    # This line reads the return address from the stack. Will be removed later
-    #ld t1, ss, [1, t0, rsp], addressSize=ssz
+    # This line reads the return address from the stack.
+    # Comment in for Shadow Stack
+    #ld t2, ss, [1, t0, rsp], addressSize=ssz
 
     # RAS logic
 
@@ -83,9 +95,20 @@ def macroop RET_NEAR_I
     # Read return address from RAS
     ld t1, flatseg, [0, t0, t7], dataSize=dsz
 
-    # Check address of return
+    # Shadow Stack Comparison. Comment in for Shadow Stack
+    #sub t2, t1, t2, flags=(EZF,)
+    #br label("rsp_matches"), flags=(CEZF,)
+    #fault "std::make_shared<SecurityException>()"
+#rsp_matches:
+
+    # This line decrements the stack pointer register
+    # to compensate for the return address on the stack.
+    # Comment in for Shadow Stack
+    # UPD: You actually need to leave it in for stack formatting
     addi rsp, rsp, dsz, dataSize=ssz
-    add rsp, rsp, t2, dataSize=ssz
+    # ! DON'T COMMENT OUT THIS LINE IN RAS MODE !
+    add rsp, rsp, t3, dataSize=ssz
+
     wripi t1, 0
 };
 

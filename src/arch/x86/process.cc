@@ -69,6 +69,7 @@
 
 #include "base/trace.hh"
 #include "debug/X86.hh"
+#include "debug/TLB.hh"
 #include "arch/x86/regs/misc.hh"
 
 namespace gem5
@@ -188,8 +189,9 @@ X86_64Process::initState()
     rasLimit = rasBase + rasSize;
     memState->mapRegion(rasBase, rasSize, "return_address_stack");
 
-    // Manually set up physical memory and page table entries, because SE mode sucks ass and doesn't properly handle page table mapping
+    // Manually set up physical memory and page table entries, because SE mode doesn't properly handle page table mapping
     allocateMem(rasBase, rasSize, false, EmulationPageTable::MappingFlags::RAS);
+    DPRINTF(TLB, "RAS rasBase value: %#x\n", rasBase);
 
     // init thread registers
 

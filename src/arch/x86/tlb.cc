@@ -57,6 +57,7 @@
 #include "sim/process.hh"
 #include "sim/pseudo_inst.hh"
 #include "ras/ras_timing_simple_cpu/ras_timing_simple_cpu.hh"
+#include "sim/se_workload.hh"
 
 namespace gem5
 {
@@ -447,6 +448,8 @@ TLB::translate(const RequestPtr &req,
                     const EmulationPageTable::Entry *pte =
                         p->pTable->lookup(vaddr);
                     if (!pte) {
+                        DPRINTF(TLB, "Page table entry not found in pTable.\n");
+                        DPRINTF(TLB, "Physical memory free: %d\n", p->seWorkload->freeMemSize(0));
                         return std::make_shared<PageFault>(vaddr, true, mode,
                                                            true, false);
                     } else {

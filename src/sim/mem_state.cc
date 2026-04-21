@@ -38,6 +38,8 @@
 #include "sim/system.hh"
 #include "sim/vma.hh"
 
+#include "debug/TLB.hh"
+
 namespace gem5
 {
 
@@ -386,12 +388,16 @@ MemState::remapRegion(Addr start_addr, Addr new_start_addr, Addr length)
 bool
 MemState::fixupFault(Addr vaddr)
 {
+    DPRINTF(TLB, "MemState: Trying to fixup fault at: %#x\n", vaddr);
+
     /**
      * Check if we are accessing a mapped virtual address. If so then we
      * just haven't allocated it a physical page yet and can do so here.
      */
     for (const auto &vma : _vmaList) {
         if (vma.contains(vaddr)) {
+            DPRINTF(TLB, "MemState: Found matching VMA\n");
+
             Addr vpage_start = roundDown(vaddr, _pageBytes);
             _ownerProcess->allocateMem(vpage_start, _pageBytes);
 
@@ -425,6 +431,8 @@ MemState::fixupFault(Addr vaddr)
      * yet.
      */
     if (vaddr >= _stackMin && vaddr < _stackBase) {
+        DPRINTF(TLB, "MemState: Growing stack\n");
+
         _ownerProcess->allocateMem(roundDown(vaddr, _pageBytes), _pageBytes);
         return true;
     }
@@ -434,6 +442,8 @@ MemState::fixupFault(Addr vaddr)
      * this address.
      */
     if (vaddr < _stackMin && vaddr >= _stackBase - _maxStackSize) {
+        DPRINTF(TLB, "MemState: Growing Stack Pages\n");
+
         while (vaddr < _stackMin) {
             _stackMin -= _pageBytes;
             if (_stackBase - _stackMin > _maxStackSize) {
@@ -444,6 +454,8 @@ MemState::fixupFault(Addr vaddr)
         }
         return true;
     }
+    
+    DPRINTF(TLB, "MemState: No fixup found\n");
 
     return false;
 }

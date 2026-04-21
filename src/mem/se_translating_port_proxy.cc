@@ -42,6 +42,7 @@
 
 #include "sim/process.hh"
 #include "sim/system.hh"
+#include "debug/TLB.hh"
 
 namespace gem5
 {
@@ -55,6 +56,11 @@ bool
 SETranslatingPortProxy::fixupRange(const TranslationGen::Range &range,
         BaseMMU::Mode mode) const
 {
+    DPRINTF(TLB, "fixupRange: vaddr=%#x size=%d mode=%s allocating=%d\n",
+            range.vaddr, range.size, 
+            mode == BaseMMU::Write ? "Write" : "Read",
+            allocating);
+    
     auto *process = _tc->getProcessPtr();
 
     if (mode == BaseMMU::Write) {

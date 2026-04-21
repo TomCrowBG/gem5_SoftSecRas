@@ -56,8 +56,8 @@ TlbEntry::TlbEntry()
 }
 
 TlbEntry::TlbEntry(Addr asn, Addr _vaddr, Addr _paddr,
-                   bool uncacheable, bool read_only, bool ras) :
-    paddr(_paddr), vaddr(_vaddr), logBytes(PageShift), writable(!read_only), ras(ras),
+                   bool uncacheable, bool read_only, bool _ras) :
+    paddr(_paddr), vaddr(_vaddr), logBytes(PageShift), writable(!read_only), ras(_ras),
     user(true), uncacheable(uncacheable), global(false), patBit(0),
     noExec(false), lruSeq(0)
 {}

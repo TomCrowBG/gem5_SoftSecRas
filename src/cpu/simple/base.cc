@@ -76,6 +76,7 @@
 #include "sim/sim_object.hh"
 #include "sim/stats.hh"
 #include "sim/system.hh"
+#include "debug/TLB.hh"
 
 namespace gem5
 {

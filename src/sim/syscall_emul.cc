@@ -64,6 +64,8 @@
 #include "sim/syscall_desc.hh"
 #include "sim/system.hh"
 
+#include "debug/SyscallAll.hh"
+
 namespace gem5
 {
 
@@ -274,6 +276,11 @@ brkFunc(SyscallDesc *desc, ThreadContext *tc, VPtr<> new_brk)
 
     std::shared_ptr<MemState> mem_state = p->memState;
     Addr brk_point = mem_state->getBrkPoint();
+
+    DPRINTF_SYSCALL(Verbose, "updateBrkRegion: old=%#x new=%#x\n", brk_point, new_brk);
+    DPRINTF_SYSCALL(Verbose, "  old page-aligned: %s, new page-aligned: %s\n",
+            (brk_point % 0x1000 == 0) ? "yes" : "no",
+            (new_brk % 0x1000 == 0) ? "yes" : "no");
 
     // in Linux at least, brk(0) returns the current break value
     // (note that the syscall and the glibc function have different behavior)

@@ -47,7 +47,8 @@ def macroop CALL_NEAR_I
 
     # Check target of call
 
-    # This line places the return address on the stack. Will be removed later
+    # This line places the return address on the stack.
+    # Comment in for Shadow Stack
     #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
 
     # RAS logic
@@ -60,7 +61,12 @@ def macroop CALL_NEAR_I
     addi t2, t2, dsz
     wrval ctrlRegIdx(205), t2
 
+    # This line increments the stack pointer register
+    # to compensate for the return address on the stack.
+    # Comment in for Shadow Stack
+    # UPD: You actually need to leave it in for stack formatting
     subi rsp, rsp, dsz, dataSize=ssz
+
     wrip t7, t1
 };
 
@@ -76,7 +82,8 @@ def macroop CALL_NEAR_R
 
     # Check target of call
 
-    # This line places the return address on the stack. Will be removed later
+    # This line places the return address on the stack.
+    # Comment in for Shadow Stack
     #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
 
     # RAS logic
@@ -89,7 +96,12 @@ def macroop CALL_NEAR_R
     addi t2, t2, dsz
     wrval ctrlRegIdx(205), t2
 
+    # This line increments the stack pointer register
+    # to compensate for the return address on the stack.
+    # Comment in for Shadow Stack
+    # UPD: You actually need to leave it in for stack formatting
     subi rsp, rsp, dsz, dataSize=ssz
+
     wripi reg, 0
 };
 
@@ -106,7 +118,8 @@ def macroop CALL_NEAR_M
 
     # Check target of call
 
-    # This line places the return address on the stack. Will be removed later
+    # This line places the return address on the stack.
+    # Comment in for Shadow Stack
     #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
 
     # RAS logic
@@ -119,7 +132,12 @@ def macroop CALL_NEAR_M
     addi t2, t2, dsz
     wrval ctrlRegIdx(205), t2
 
+    # This line increments the stack pointer register
+    # to compensate for the return address on the stack.
+    # Comment in for Shadow Stack
+    # UPD: You actually need to leave it in for stack formatting
     subi rsp, rsp, dsz, dataSize=ssz
+
     wripi t1, 0
 };
 
@@ -136,7 +154,8 @@ def macroop CALL_NEAR_P
 
     # Check target of call
 
-    # This line places the return address on the stack. Will be removed later
+    # This line places the return address on the stack.
+    # Comment in for Shadow Stack
     #st t7, ss, [0, t0, rsp], "-env.dataSize", addressSize=ssz
 
     # RAS logic
@@ -149,7 +168,12 @@ def macroop CALL_NEAR_P
     addi t2, t2, dsz
     wrval ctrlRegIdx(205), t2
 
+    # This line increments the stack pointer register
+    # to compensate for the return address on the stack.
+    # Comment in for Shadow Stack
+    # UPD: You actually need to leave it in for stack formatting
     subi rsp, rsp, dsz, dataSize=ssz
+
     wripi t1, 0
 };
 
